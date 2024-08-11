@@ -1,3 +1,4 @@
 #!/bin/sh
-python3 /data/venus.dbus-twc3/dbus_twc3.py
+python3 /data/venus.dbus-twc3/dbus_twc3.py --ip 192.168.20.10
+
 

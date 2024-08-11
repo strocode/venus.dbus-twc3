@@ -58,6 +58,8 @@ class DbusTWC3Service:
                ip=None,
                dryrun=False):
     self._name = name
+    self._startstop_value = 0
+    self._current_value = 0
     ip = ip or 'TeslaWallConnector.local'
     url = 'http://' + ip + '/api/1'
     self.URL = url + '/vitals'
@@ -150,10 +152,12 @@ class DbusTWC3Service:
 
   def _setcurrent(self, path, value):
       print('Unimplemented', path, value)
+      self._current_value = value
       return True
 
   def _startstop(self, path, value):
       print('Unimplemented', path, value)
+      self._startstop_value = value
       return True
 
   def _lifetime_update(self):
@@ -208,7 +212,7 @@ class DbusTWC3Service:
     ds['/Ac/Frequency'] = round(d['grid_hz'], 1)
     ds['/Ac/Voltage'] = round(d['grid_v'])
     ds['/Current'] = round(d['vehicle_current_a'], 1)
-    ds['/SetCurrent'] = 16  # static for now
+    ds['/SetCurrent'] = self._current_value  # KB update - use current valuew
     ds['/MaxCurrent'] = 16  # d['vehicle_current_a']
     # ds['/Ac/Energy/Forward'] = float(d['session_energy_wh']) / 1000.0
     ds['/Ac/Energy/Forward'] = round(float(lt['energy_wh']) / 1000.0, 3)
@@ -220,8 +224,8 @@ class DbusTWC3Service:
         if d['vehicle_current_a'] > 1:
             state = 2 # charging
     ds['/Status'] = state
-    ds['/Mode'] = 0 # Manual, no control
-    ds['/StartStop'] = 1 # Always on
+    ds['/Mode'] = 0 # Manual, no control - KB not yet updated. We have control via BLE of car
+    ds['/StartStop'] = self._startstop_value # KB updated - return writable valu. Not always on
     ds['/MCU/Temperature'] = d['mcu_temp_c']
     ds['/PCB/Temperature'] = d['pcba_temp_c']
     ds['/Handle/Temperature'] = d['handle_temp_c']
