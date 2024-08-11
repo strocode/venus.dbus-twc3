@@ -1,2 +1,5 @@
 *.pyc
 *~
+service/log/supervise/*
+service/supervise/*
+supervise/*
